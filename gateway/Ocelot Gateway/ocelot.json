@@ -1,6 +1,6 @@
 {
   "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:8888" // Port của Gateway
+    "BaseUrl": "http://localhost:9999" // Port của Gateway
   },
   "Routes": [
     {
@@ -9,7 +9,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 9669 // Port của .NET Service
+          "Port": 6996 // Port của .NET Service
         }
       ],
       "UpstreamPathTemplate": "/gateway/urls",
