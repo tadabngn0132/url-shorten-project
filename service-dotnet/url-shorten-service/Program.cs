@@ -1,4 +1,9 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using url_shorten_service.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<url_shorten_serviceContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("url_shorten_serviceContext") ?? throw new InvalidOperationException("Connection string 'url_shorten_serviceContext' not found.")));
 
 // Add services to the container.
 
