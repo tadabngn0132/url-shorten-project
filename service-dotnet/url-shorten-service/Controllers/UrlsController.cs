@@ -52,6 +52,20 @@ namespace url_shorten_service.Controllers
                 return BadRequest();
             }
 
+            // Lấy URL hiện tại từ database
+            var existingUrl = await _context.Url.FindAsync(id);
+            if (existingUrl == null)
+            {
+                return NotFound();
+            }
+
+            // Nếu shortcode mới là null hoặc trống, giữ nguyên shortcode cũ
+            if (string.IsNullOrEmpty(url.ShortCode))
+            {
+                url.ShortCode = existingUrl.ShortCode;
+            }
+
+            _context.Entry(existingUrl).State = EntityState.Detached;
             _context.Entry(url).State = EntityState.Modified;
 
             try
@@ -78,6 +92,25 @@ namespace url_shorten_service.Controllers
         [HttpPost]
         public async Task<ActionResult<Url>> PostUrl(Url url)
         {
+            // Kiểm tra xem người dùng đã cung cấp alias chưa
+            if (string.IsNullOrEmpty(url.ShortCode))
+            {
+                // Tạo shortcode độc nhất
+                bool isUnique = false;
+                string newShortCode = "";
+
+                while (!isUnique)
+                {
+                    string guid = Guid.NewGuid().ToString("N");
+                    newShortCode = guid.Substring(0, 8);
+
+                    // Kiểm tra xem alias đã tồn tại chưa
+                    isUnique = !await _context.Url.AnyAsync(u => u.ShortCode == newShortCode);
+                }
+
+                url.ShortCode = newShortCode;
+            }
+
             _context.Url.Add(url);
             await _context.SaveChangesAsync();
 
